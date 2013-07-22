@@ -144,22 +144,22 @@ void JACKPlugin::Shutdown()
 
 bool LoadPlugin()
 {
-	return JACKPlugin::Initialize() != NULL;
+	return true;
 }
 
 void UnloadPlugin()
 {
-	JACKPlugin::Shutdown();
+	
 }
 
 void OnStartStream()
 {
-
+	JACKPlugin::Initialize();
 }
 
 void OnStopStream()
 {
-
+	JACKPlugin::Shutdown();
 }
 
 CTSTR GetPluginName()
