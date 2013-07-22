@@ -103,6 +103,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libjack.lib;OBSapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetDir)$(TargetFileName)" "$(OBS_DIR)plugins\$(TargetFileName)"
+copy /Y "$(TargetDir)$(TargetName).pdb" "$(OBS_DIR)$(TargetName).pdb"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -117,6 +121,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libjack64.lib;OBSapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetDir)$(TargetFileName)" "$(OBS64_DIR)plugins\$(TargetFileName)"
+copy /Y "$(TargetDir)$(TargetName).pdb" "$(OBS64_DIR)$(TargetName).pdb"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,6 +143,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>libjack.lib;OBSapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetDir)$(TargetFileName)" "$(OBS_DIR)plugins\$(TargetFileName)"
+copy /Y "$(TargetDir)$(TargetName).pdb" "$(OBS_DIR)$(TargetName).pdb"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,6 +165,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>libjack64.lib;OBSapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetDir)$(TargetFileName)" "$(OBS64_DIR)plugins\$(TargetFileName)"
+copy /Y "$(TargetDir)$(TargetName).pdb" "$(OBS64_DIR)$(TargetName).pdb"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="JACKAudioSource.cpp" />
