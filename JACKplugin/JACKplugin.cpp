@@ -44,20 +44,10 @@ bool JACKPlugin::ClientConnect()
 		if (!inputLeft || !inputRight)
 			throw "No more JACK ports available";
 
+		InitializeAudioSource();
+
 		if (jack_activate(client))
 			throw "Cannot activate client";
-		
-		if (!audioSource)
-		{
-			bool  bFloat = true;
-			UINT  inputChannels = 2;
-			UINT  inputSamplesPerSec = jack_get_sample_rate(client);
-			UINT  inputBitsPerSample = sizeof(float)*8;
-			UINT  inputBlockSize = sizeof(float) * inputChannels;
-
-			audioSource = new JACKAudioSource(bFloat, inputChannels, inputSamplesPerSec, inputBitsPerSample, inputBlockSize);		
-			API->AddAudioSource(audioSource);
-		}
 	}
 	catch (const char *error)
 	{
@@ -67,6 +57,23 @@ bool JACKPlugin::ClientConnect()
 	}
 
 	return true;
+}
+
+void JACKPlugin::InitializeAudioSource()
+{
+	if (!ClientIsConnected())
+		return;
+
+	if (audioSource)
+		delete audioSource;
+
+	bool  bFloat = true;
+	UINT  inputChannels = 2;
+	UINT  inputSamplesPerSec = jack_get_sample_rate(client);
+	UINT  inputBitsPerSample = sizeof(float)*8;
+	UINT  inputBlockSize = sizeof(float) * inputChannels;
+
+	audioSource = new JACKAudioSource(bFloat, inputChannels, inputSamplesPerSec, inputBitsPerSample, inputBlockSize);		
 }
 
 void JACKPlugin::ClientDisconnect()
@@ -80,8 +87,6 @@ void JACKPlugin::ClientDisconnect()
 
 	if (audioSource)
 	{
-		API->RemoveAudioSource(audioSource);
-
 		delete audioSource;
 		audioSource = NULL;
 	}
@@ -95,18 +100,18 @@ bool JACKPlugin::ClientIsConnected()
 int JACKPlugin::ProcessCallback(jack_nframes_t nframes, void *arg)
 {
 	if (arg != instance || !instance)
-		return 0;
+		return 1;
 
 	JACKPlugin* plugin = static_cast<JACKPlugin*>(arg);
 
 	if (!plugin->inputLeft || !plugin->inputRight)
-		return 0;
+		return 1;
 
 	float* inLeft = (float*)jack_port_get_buffer(plugin->inputLeft, nframes);
 	float* inRight = (float*)jack_port_get_buffer(plugin->inputRight, nframes);
 
 	if (!plugin->audioSource)
-		return 0;
+		return 1;
 
 	List<float> buffer;
 	buffer.SetSize(nframes * 2);

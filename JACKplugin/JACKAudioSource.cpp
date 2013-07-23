@@ -9,10 +9,13 @@ JACKAudioSource::JACKAudioSource(bool bFloat, UINT channels, UINT samplesPerSec,
 	outputBuffer.SetSize(sampleSegmentSize);
 
 	InitAudioData(bFloat, channels, samplesPerSec, bitsPerSample, blockSize, 0);
+
+	API->AddAudioSource(this);
 }
 
 JACKAudioSource::~JACKAudioSource()
 {
+	API->RemoveAudioSource(this);
 	DeleteCriticalSection(&sampleBufferLock);
 }
 

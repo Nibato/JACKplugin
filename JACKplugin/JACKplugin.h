@@ -26,6 +26,8 @@ private:
 	bool ClientConnect();
 	void ClientDisconnect();
 
+	void InitializeAudioSource();
+
 public:
 	~JACKPlugin();
 
