@@ -108,7 +108,8 @@ int JACKPlugin::ProcessCallback(jack_nframes_t nframes, void *arg)
 	if (!plugin->audioSource)
 		return 0;
 
-	float* buffer = new float[nframes * 2];
+	List<float> buffer;
+	buffer.SetSize(nframes * 2);
 
 	for (UINT j = 0, i = 0; i < nframes; i++)
 	{
@@ -116,8 +117,7 @@ int JACKPlugin::ProcessCallback(jack_nframes_t nframes, void *arg)
 		buffer[j++] = inRight[i];
 	}
 
-	plugin->audioSource->ReceiveAudio((LPBYTE)buffer, sizeof(float) * nframes * 2);
-	delete buffer;
+	plugin->audioSource->ReceiveAudio((LPBYTE)buffer.Array(), sizeof(float) * nframes * 2);
 
 	return 0;
 }
