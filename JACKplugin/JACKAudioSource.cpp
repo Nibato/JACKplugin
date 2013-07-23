@@ -1,14 +1,19 @@
 #include "JACKAudioSource.h"
 
-JACKAudioSource::JACKAudioSource(bool bFloat, UINT channels, UINT samplesPerSec, UINT bitsPerSample, UINT blockSize)
+JACKAudioSource::JACKAudioSource(UINT inputSamplesPerSec)
 {
 	InitializeCriticalSection(&sampleBufferLock);
 
-	sampleFrameCount   = samplesPerSec/100;
-	sampleSegmentSize  = blockSize*sampleFrameCount;
+	bool  bFloat = true;
+	UINT  inputChannels = 2;
+	UINT  inputBitsPerSample = sizeof(float)*8;
+	UINT  inputBlockSize = sizeof(float) * inputChannels;
+
+	sampleFrameCount   = inputSamplesPerSec/100;
+	sampleSegmentSize  = inputBlockSize*sampleFrameCount;
 	outputBuffer.SetSize(sampleSegmentSize);
 
-	InitAudioData(bFloat, channels, samplesPerSec, bitsPerSample, blockSize, 0);
+	InitAudioData(bFloat, inputChannels, inputSamplesPerSec, inputBitsPerSample, inputBlockSize, 0);
 
 	API->AddAudioSource(this);
 }

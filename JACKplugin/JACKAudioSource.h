@@ -12,7 +12,7 @@ private:
 	CRITICAL_SECTION sampleBufferLock;
 
 public:
-	JACKAudioSource(bool bFloat, UINT channels, UINT samplesPerSec, UINT bitsPerSample, UINT blockSize);
+	JACKAudioSource(UINT inputSamplesPerSec);
 	~JACKAudioSource();
 
 	void ReceiveAudio(float *inLeft, float *inRight, UINT frames);

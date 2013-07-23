@@ -67,13 +67,7 @@ void JACKPlugin::InitializeAudioSource()
 	if (audioSource)
 		delete audioSource;
 
-	bool  bFloat = true;
-	UINT  inputChannels = 2;
-	UINT  inputSamplesPerSec = jack_get_sample_rate(client);
-	UINT  inputBitsPerSample = sizeof(float)*8;
-	UINT  inputBlockSize = sizeof(float) * inputChannels;
-
-	audioSource = new JACKAudioSource(bFloat, inputChannels, inputSamplesPerSec, inputBitsPerSample, inputBlockSize);		
+	audioSource = new JACKAudioSource(jack_get_sample_rate(client));		
 }
 
 void JACKPlugin::ClientDisconnect()
