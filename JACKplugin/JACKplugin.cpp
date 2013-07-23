@@ -23,7 +23,7 @@ JACKPlugin::~JACKPlugin()
 
 bool JACKPlugin::ClientConnect()
 {
-	if (client)
+	if (ClientIsConnected())
 		return true;
 
 	try
@@ -32,7 +32,7 @@ bool JACKPlugin::ClientConnect()
 		
 		client = jack_client_open (PLUGIN_FULLNAME, JackNoStartServer, &status, NULL);
 				
-		if (!client)
+		if (!ClientIsConnected())
 			throw "Could not connect to jack server";
 
 		jack_set_process_callback(client, ProcessCallback, this);
@@ -71,7 +71,7 @@ bool JACKPlugin::ClientConnect()
 
 void JACKPlugin::ClientDisconnect()
 {
-	if (client)
+	if (ClientIsConnected())
 			jack_client_close(client);
 	
 	client = NULL;
@@ -89,7 +89,7 @@ void JACKPlugin::ClientDisconnect()
 
 bool JACKPlugin::ClientIsConnected()
 {
-	return client;
+	return (client != NULL && client != 0);
 }
 
 int JACKPlugin::ProcessCallback(jack_nframes_t nframes, void *arg)
