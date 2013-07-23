@@ -43,14 +43,23 @@ void JACKAudioSource::ReleaseBuffer()
 
 }
 
-void JACKAudioSource::ReceiveAudio(LPBYTE lpData, UINT dataLength)
+void JACKAudioSource::ReceiveAudio(float *inLeft, float *inRight, UINT frames)
 {
-	if(lpData)
+	if (!inLeft || !inRight)
+		return;
+
+	List<float> buffer;
+	buffer.SetSize(frames * 2);
+	
+	for (UINT j = 0, i = 0; i < frames; i++)
 	{
-		EnterCriticalSection(&sampleBufferLock);
-		sampleBuffer.AppendArray(lpData, dataLength);
-		LeaveCriticalSection(&sampleBufferLock);
+		buffer[j++] = inLeft[i];
+		buffer[j++] = inRight[i];
 	}
+
+	EnterCriticalSection(&sampleBufferLock);
+	sampleBuffer.AppendArray((LPBYTE)buffer.Array(), buffer.Num() * sizeof(float));
+	LeaveCriticalSection(&sampleBufferLock);
 }
 
 CTSTR JACKAudioSource::GetDeviceName() const

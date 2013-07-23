@@ -15,7 +15,7 @@ public:
 	JACKAudioSource(bool bFloat, UINT channels, UINT samplesPerSec, UINT bitsPerSample, UINT blockSize);
 	~JACKAudioSource();
 
-	void ReceiveAudio(LPBYTE lpData, UINT dataLength);
+	void ReceiveAudio(float *inLeft, float *inRight, UINT frames);
 	void FlushSamples();
 
 protected:
