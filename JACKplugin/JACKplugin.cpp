@@ -30,7 +30,7 @@ bool JACKPlugin::ClientConnect()
 	{
 		jack_status_t status;
 		
-		client = jack_client_open (PLUGIN_FULLNAME, JackNoStartServer, &status, NULL);
+		client = jack_client_open ("OBS (" PLUGIN_NAME ")", JackNoStartServer, &status, NULL);
 				
 		if (!ClientIsConnected())
 			throw "Could not connect to jack server";
@@ -169,7 +169,7 @@ void OnStopStream()
 
 CTSTR GetPluginName()
 {
-	return TEXT(PLUGIN_FULLNAME);
+	return TEXT(PLUGIN_NAME) TEXT(" v") TEXT(PLUGIN_VERSION);
 }
 
 CTSTR GetPluginDescription()

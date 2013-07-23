@@ -4,7 +4,8 @@
 #include "jack/jack.h"
 #include "JACKAudioSource.h"
 
-#define PLUGIN_FULLNAME "JACKplugin v1.0"
+#define PLUGIN_NAME "JACKplugin"
+#define PLUGIN_VERSION "1.0"
 
 class JACKPlugin
 {
