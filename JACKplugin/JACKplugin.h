@@ -22,11 +22,13 @@ private:
 	static int ProcessCallback(jack_nframes_t nframes, void *arg);
 	static void ShutdownCallback(void *arg);
 
-	bool JACKConnect();
-	void JACKDisconnect();
+	bool ClientConnect();
+	void ClientDisconnect();
 
 public:
 	~JACKPlugin();
+
+	bool ClientIsConnected();
 
 	static JACKPlugin* Initialize();
 	static void Shutdown();

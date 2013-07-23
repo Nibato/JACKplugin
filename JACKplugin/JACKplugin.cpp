@@ -11,17 +11,17 @@ JACKPlugin::JACKPlugin()
 	inputRight = NULL;
 	audioSource = NULL;
 	
-	JACKConnect();
+	ClientConnect();
 }
 
 JACKPlugin::~JACKPlugin()
 {
 	instance = NULL;
 
-	JACKDisconnect();
+	ClientDisconnect();
 }
 
-bool JACKPlugin::JACKConnect()
+bool JACKPlugin::ClientConnect()
 {
 	if (client)
 		return true;
@@ -61,7 +61,7 @@ bool JACKPlugin::JACKConnect()
 	}
 	catch (const char *error)
 	{
-		JACKDisconnect();
+		ClientDisconnect();
 		MessageBoxA(NULL, error, "Error - JACKPlugin", MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
@@ -69,7 +69,7 @@ bool JACKPlugin::JACKConnect()
 	return true;
 }
 
-void JACKPlugin::JACKDisconnect()
+void JACKPlugin::ClientDisconnect()
 {
 	if (client)
 			jack_client_close(client);
@@ -85,6 +85,11 @@ void JACKPlugin::JACKDisconnect()
 		delete audioSource;
 		audioSource = NULL;
 	}
+}
+
+bool JACKPlugin::ClientIsConnected()
+{
+	return client;
 }
 
 int JACKPlugin::ProcessCallback(jack_nframes_t nframes, void *arg)
@@ -124,7 +129,7 @@ void JACKPlugin::ShutdownCallback(void *arg)
 
 	JACKPlugin* plugin = static_cast<JACKPlugin*>(arg);
 
-	plugin->JACKDisconnect();
+	plugin->ClientDisconnect();
 }
 
 JACKPlugin* JACKPlugin::Initialize()
