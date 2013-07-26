@@ -164,5 +164,5 @@ CTSTR GetPluginName()
 
 CTSTR GetPluginDescription()
 {
-	return TEXT("FIXME: Fill me in ;)");
+	return TEXT("Provides an audio source input from the JACK Audio Connection Kit.");
 }
