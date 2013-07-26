@@ -13,6 +13,10 @@ JACKAudioSource::JACKAudioSource(UINT inputSamplesPerSec)
 	sampleSegmentSize  = inputBlockSize*sampleFrameCount;
 	outputBuffer.SetSize(sampleSegmentSize);
 
+	sampleBuffer = jack_ringbuffer_create(sampleSegmentSize * 5);
+
+	assert(!jack_ringbuffer_mlock(sampleBuffer));
+
 	InitAudioData(bFloat, inputChannels, inputSamplesPerSec, inputBitsPerSample, inputBlockSize, 0);
 
 	API->AddAudioSource(this);
@@ -21,16 +25,16 @@ JACKAudioSource::JACKAudioSource(UINT inputSamplesPerSec)
 JACKAudioSource::~JACKAudioSource()
 {
 	API->RemoveAudioSource(this);
+	jack_ringbuffer_free(sampleBuffer);
 	DeleteCriticalSection(&sampleBufferLock);
 }
 
 bool JACKAudioSource::GetNextBuffer(void **buffer, UINT *numFrames, QWORD *timestamp)
 {
-	if(sampleBuffer.Num() >= sampleSegmentSize)
+	if(jack_ringbuffer_read_space(sampleBuffer) >= sampleSegmentSize)
 	{
 		EnterCriticalSection(&sampleBufferLock);
-		mcpy(outputBuffer.Array(), sampleBuffer.Array(), sampleSegmentSize);
-		sampleBuffer.RemoveRange(0, sampleSegmentSize);
+		jack_ringbuffer_read(sampleBuffer, (char *)outputBuffer.Array(), sampleSegmentSize);
 		LeaveCriticalSection(&sampleBufferLock);
 
 		*buffer = outputBuffer.Array();
@@ -52,18 +56,17 @@ void JACKAudioSource::ReceiveAudio(float *inLeft, float *inRight, UINT frames)
 {
 	if (!inLeft || !inRight)
 		return;
-
-	List<float> buffer;
-	buffer.SetSize(frames * 2);
 	
+	EnterCriticalSection(&sampleBufferLock);
 	for (UINT j = 0, i = 0; i < frames; i++)
 	{
-		buffer[j++] = inLeft[i];
-		buffer[j++] = inRight[i];
+		if (jack_ringbuffer_write_space(sampleBuffer) < (sizeof(float)*2))
+			break;
+
+		jack_ringbuffer_write(sampleBuffer, (const char *)&inLeft[i], sizeof(float));
+		jack_ringbuffer_write(sampleBuffer, (const char *)&inRight[i], sizeof(float));
 	}
 
-	EnterCriticalSection(&sampleBufferLock);
-	sampleBuffer.AppendArray((LPBYTE)buffer.Array(), buffer.Num() * sizeof(float));
 	LeaveCriticalSection(&sampleBufferLock);
 }
 
@@ -75,7 +78,7 @@ CTSTR JACKAudioSource::GetDeviceName() const
 void JACKAudioSource::FlushSamples()
 {
 	EnterCriticalSection(&sampleBufferLock);
-	sampleBuffer.Clear();
+	jack_ringbuffer_reset(sampleBuffer);
 	LeaveCriticalSection(&sampleBufferLock);
 }
 

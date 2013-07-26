@@ -1,12 +1,14 @@
 #pragma once
 
 #include "OBSapi.h"
+#include "jack/ringbuffer.h"
 
 class JACKAudioSource : public AudioSource
 {
 private:
 	UINT sampleSegmentSize, sampleFrameCount;
-	List<BYTE> sampleBuffer;
+
+	jack_ringbuffer_t* sampleBuffer;
 	List<BYTE> outputBuffer;
 
 	CRITICAL_SECTION sampleBufferLock;
