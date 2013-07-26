@@ -2,8 +2,6 @@
 
 JACKAudioSource::JACKAudioSource(UINT inputSamplesPerSec)
 {
-	InitializeCriticalSection(&sampleBufferLock);
-
 	bool  bFloat = true;
 	UINT  inputChannels = 2;
 	UINT  inputBitsPerSample = sizeof(float)*8;
@@ -26,16 +24,13 @@ JACKAudioSource::~JACKAudioSource()
 {
 	API->RemoveAudioSource(this);
 	jack_ringbuffer_free(sampleBuffer);
-	DeleteCriticalSection(&sampleBufferLock);
 }
 
 bool JACKAudioSource::GetNextBuffer(void **buffer, UINT *numFrames, QWORD *timestamp)
 {
 	if(jack_ringbuffer_read_space(sampleBuffer) >= sampleSegmentSize)
 	{
-		EnterCriticalSection(&sampleBufferLock);
 		jack_ringbuffer_read(sampleBuffer, (char *)outputBuffer.Array(), sampleSegmentSize);
-		LeaveCriticalSection(&sampleBufferLock);
 
 		*buffer = outputBuffer.Array();
 		*numFrames = sampleFrameCount;
@@ -57,7 +52,6 @@ void JACKAudioSource::ReceiveAudio(float *inLeft, float *inRight, UINT frames)
 	if (!inLeft || !inRight)
 		return;
 	
-	EnterCriticalSection(&sampleBufferLock);
 	for (UINT j = 0, i = 0; i < frames; i++)
 	{
 		if (jack_ringbuffer_write_space(sampleBuffer) < (sizeof(float)*2))
@@ -67,7 +61,6 @@ void JACKAudioSource::ReceiveAudio(float *inLeft, float *inRight, UINT frames)
 		jack_ringbuffer_write(sampleBuffer, (const char *)&inRight[i], sizeof(float));
 	}
 
-	LeaveCriticalSection(&sampleBufferLock);
 }
 
 CTSTR JACKAudioSource::GetDeviceName() const
@@ -77,8 +70,6 @@ CTSTR JACKAudioSource::GetDeviceName() const
 
 void JACKAudioSource::FlushSamples()
 {
-	EnterCriticalSection(&sampleBufferLock);
 	jack_ringbuffer_reset(sampleBuffer);
-	LeaveCriticalSection(&sampleBufferLock);
 }
 

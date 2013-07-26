@@ -11,8 +11,6 @@ private:
 	jack_ringbuffer_t* sampleBuffer;
 	List<BYTE> outputBuffer;
 
-	CRITICAL_SECTION sampleBufferLock;
-
 public:
 	JACKAudioSource(UINT inputSamplesPerSec);
 	~JACKAudioSource();
