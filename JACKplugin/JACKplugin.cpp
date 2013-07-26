@@ -73,8 +73,11 @@ void JACKPlugin::InitializeAudioSource()
 void JACKPlugin::ClientDisconnect()
 {
 	if (ClientIsConnected())
+	{
+			jack_deactivate(client);
 			jack_client_close(client);
-	
+	}
+
 	client = NULL;
 	inputLeft = NULL;
 	inputRight = NULL;
