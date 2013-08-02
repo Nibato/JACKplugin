@@ -1,0 +1,37 @@
+----------------------
+      COMPILING
+----------------------
+
+   Required libraries:
+	- OBSApi
+	- libjack
+
+   Required environment variables:
+	WindowsSDK80Path - Points to windows sdk path. Must include
+                           ending backslash.
+
+        OBSAPI_DIR - Points to the path of the include/lib folders for
+                     OBSapi. Must include ending backslash.
+
+        JACK_DIR - Points to the path of the include/lib folders for
+                   JACK. Must include ending backslash.
+        
+        OBS_DIR - Points to OBS 32-bit installation path. Must include 
+                  ending backslash.
+
+        OBS64_DIR - Points to OBS 64-bit installation path. Must 
+                    include ending backslash.
+
+
+----------------------
+      USAGE
+----------------------
+
+   Place JACKplugin.dll in OBS's plugin folder. The audio output sources
+   in JACK will become available during streaming/previewing. 
+
+   The plugin will disconnect from JACK upon stopping the stream/preview. 
+   If you do not wish to reconfigure JACK each time you start streaming
+   you may use the JACK control program that comes with JACK to 
+   automatically relink your audio sources for you.
+   
